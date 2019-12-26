@@ -1,0 +1,10 @@
+{
+  "Name": "Self Hosted Server",
+  "Author": "Jacob Doiron",
+  "Version": "1.0.0",
+  "Description": "Stardew Valley mod to support a self-hosted instance which auto sleeps and clicks through various menus.",
+  "UniqueID": "jdoiron94.Self_Hosted_Server",
+  "EntryDll": "SelfHostedServer.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
+}
