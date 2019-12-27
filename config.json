@@ -1,3 +1,7 @@
 {
-  "debug": true
+  "Debug": true,
+  "SaveData": {
+    "FileName": "Jacob_202268129",
+    "Multiplayer": true
+  }
 }

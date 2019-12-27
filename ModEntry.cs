@@ -2,6 +2,8 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
+using System;
+using System.IO;
 
 namespace SelfHostedServer
 {
@@ -11,6 +13,7 @@ namespace SelfHostedServer
         private int clients;
         private int bedX;
         private int bedY;
+        private int titleMenuTicks = 30;
 
         private bool asleep;
 
@@ -56,6 +59,38 @@ namespace SelfHostedServer
                 {
                     Monitor.Log($"OneSecondUpdateTicked event: [clients] => {clients}", LogLevel.Debug);
                     Game1.paused = true;
+                }
+            }
+            else
+            {
+                if (Game1.activeClickableMenu is TitleMenu)
+                {
+                    if (titleMenuTicks <= 0)
+                    {
+                        Monitor.Log($"OneSecondUpdateTicked event: [Game1.activeClickableMenu] => {Game1.activeClickableMenu}", LogLevel.Debug);
+                        if (!Directory.Exists(Path.Combine(Constants.SavesPath, config.SaveData.FileName)))
+                        {
+                            Monitor.Log($"OneSecondUpdateTicked event: Save file does not exist ({config.SaveData.FileName})", LogLevel.Warn);
+                        }
+                        else
+                        {
+                            if (config.SaveData.Multiplayer)
+                            {
+                                Game1.multiplayerMode = 2;
+                            }
+                            SaveGame.Load(config.SaveData.FileName);
+                            titleMenuTicks = 30;
+                            Monitor.Log($"OneSecondUpdateTicked event: Loaded save file => {config.SaveData.FileName}", LogLevel.Debug);
+                            if (Game1.activeClickableMenu is TitleMenu)
+                            {
+                                Game1.activeClickableMenu.exitThisMenu(false);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        titleMenuTicks -= 1;
+                    }
                 }
             }
         }
