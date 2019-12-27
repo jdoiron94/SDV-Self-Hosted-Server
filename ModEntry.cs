@@ -1,8 +1,9 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
-using System;
 using System.IO;
 
 namespace SelfHostedServer
@@ -17,6 +18,8 @@ namespace SelfHostedServer
 
         private bool asleep;
 
+        private string inviteCode;
+
         private ModConfig config;
 
         public override void Entry(IModHelper helper)
@@ -26,6 +29,7 @@ namespace SelfHostedServer
             helper.Events.GameLoop.OneSecondUpdateTicked += OnOneSecondUpdateTicked;
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
             helper.Events.GameLoop.DayStarted += OnDayStarted;
+            helper.Events.Display.Rendered += OnRendered;
         }
 
         private void OnSaving(object sender, SavingEventArgs e)
@@ -42,6 +46,20 @@ namespace SelfHostedServer
             if (Context.IsWorldReady)
             {
                 int players = Game1.otherFarmers.Count;
+                string newInviteCode = Game1.server.getInviteCode();
+                
+                if (newInviteCode != inviteCode)
+                {
+                    inviteCode = newInviteCode;
+                    string inviteFilePath = Path.Combine(Constants.ExecutionPath, "Mods", "SelfHostedServer", "InviteCode.txt");
+                    Monitor.Log($"OneSecondUpdateTicked event: [inviteCode] => {inviteCode}", LogLevel.Debug);
+
+                    using (StreamWriter writer = new StreamWriter(inviteFilePath))
+                    {
+                        writer.WriteLine(newInviteCode);
+                    }
+                }
+                
                 if (clients != players)
                 {
                     clients = players;
@@ -108,6 +126,25 @@ namespace SelfHostedServer
         {
             asleep = false;
             Monitor.Log($"DayStarted event: [asleep] => {asleep}", LogLevel.Debug);
+        }
+
+        private void OnRendered(object sender, RenderedEventArgs e)
+        {
+            if (inviteCode != null)
+            {
+                DrawText(5, 340, Game1.dialogueFont, $"Player count: {clients}");
+                DrawText(5, 420, Game1.dialogueFont, $"Invite code: {inviteCode}");
+            }
+        }
+
+        private void DrawText(int x, int y, SpriteFont font, string message)
+        {
+            SpriteBatch spriteBatch = Game1.spriteBatch;
+            int width = (int) font.MeasureString(message).X + 32;
+            int height = (int) font.MeasureString(message).Y + 21;
+
+            IClickableMenu.drawTextureBox(spriteBatch, Game1.menuTexture, new Rectangle(0, 256, 60, 60), x, y, width, height, Color.White);
+            Utility.drawTextWithShadow(spriteBatch, message, font, new Vector2(x + 16, y + 16), Game1.textColor);
         }
 
         private void Sleep()
