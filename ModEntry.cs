@@ -1,6 +1,7 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace SelfHostedServer
 {
@@ -18,21 +19,30 @@ namespace SelfHostedServer
         public override void Entry(IModHelper helper)
         {
             config = Helper.ReadConfig<ModConfig>();
+            helper.Events.GameLoop.Saving += OnSaving;
             helper.Events.GameLoop.OneSecondUpdateTicked += OnOneSecondUpdateTicked;
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
             helper.Events.GameLoop.DayStarted += OnDayStarted;
         }
 
+        private void OnSaving(object sender, SavingEventArgs e)
+        {
+            if (Game1.activeClickableMenu is ShippingMenu)
+            {
+                Monitor.Log($"SavingEvent event: [Game1.activeClickableMenu] => {Game1.activeClickableMenu}", LogLevel.Debug);
+                Helper.Reflection.GetMethod(Game1.activeClickableMenu, "okClicked").Invoke();
+            }
+        }
+
         private void OnOneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (!config.debug && Context.IsWorldReady)
+            if (Context.IsWorldReady)
             {
                 int players = Game1.otherFarmers.Count;
-                Monitor.Log($"One second tick method, players: {players}", LogLevel.Debug);
                 if (clients != players)
                 {
-                    Monitor.Log($"OneSecondUpdateTicked event: [clients] => {clients}", LogLevel.Debug);
                     clients = players;
+                    Monitor.Log($"OneSecondUpdateTicked event: [clients] => {clients}", LogLevel.Debug);
                     if (players >= 1)
                     {
                         Game1.paused = false;
@@ -52,7 +62,7 @@ namespace SelfHostedServer
 
         private void OnTimeChanged(object sender, TimeChangedEventArgs e)
         {
-            if (Context.IsWorldReady && !Game1.paused && !asleep && e.NewTime >= 610)
+            if (Context.IsWorldReady && !Game1.paused && !asleep && e.NewTime >= 700)
             {
                 Monitor.Log($"TimeChanged event: [TimeChangedEventArgs.NewTime] => {e.NewTime}", LogLevel.Debug);
                 Sleep();
