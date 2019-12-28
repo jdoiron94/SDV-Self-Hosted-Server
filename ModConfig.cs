@@ -2,8 +2,7 @@
 {
     class ModConfig
     {
-
-        public bool Debug { get; set; } = false;
+        public int TimeToSleep { get; set; } = 630;
         public Save SaveData { get; set; } = null;
     }
 

@@ -81,7 +81,7 @@ namespace SelfHostedServer
             }
             else
             {
-                if (Game1.activeClickableMenu is TitleMenu)
+                if (Game1.activeClickableMenu is TitleMenu && config.SaveData != null)
                 {
                     if (titleMenuTicks <= 0)
                     {
@@ -115,7 +115,7 @@ namespace SelfHostedServer
 
         private void OnTimeChanged(object sender, TimeChangedEventArgs e)
         {
-            if (Context.IsWorldReady && !Game1.paused && !asleep && e.NewTime >= 700)
+            if (Context.IsWorldReady && !Game1.paused && !asleep && e.NewTime >= config.TimeToSleep)
             {
                 Monitor.Log($"TimeChanged event: [TimeChangedEventArgs.NewTime] => {e.NewTime}", LogLevel.Debug);
                 Sleep();
