@@ -19,3 +19,10 @@ Here are the following properties in the configuration file and descriptions of 
 * `token` (String): token The client secret used to authenticate the Discord bot
 * `channelId` (String): The channel id the bot should monitor for message triggers. This is not the name of the channel
 * `inviteCodePath` (String): The fully qualified path to the invite code file the mod saves. This will be the path to the SelfHostedMod directory concatenated with the invite code file name. Example: `C:\Program Files (x86)\Steam\steamapps\common\Stardew Valley\Mods\SelfHostedServer\InviteCode.txt`
+
+## Usage
+After the installation steps have been completed, open a Discord instance and then start a local node instance to launch the bot.
+
+    $ node ./sdv-bot.js
+
+Note: Launch the previous command from the `DiscordBot` directory. You will need to keep the terminal window open for the bot to operate.
