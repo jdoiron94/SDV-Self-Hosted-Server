@@ -12,7 +12,7 @@ You will then need to use npm to install the required dependencies.
 
     $ npm install
 
-Once you have installed the required dependencies, you will need to edit the `config.json` file to add your bot's configuration settings.
+Once you have installed the required dependencies, you will need to rename the `config-dist.json` file to `config.json` and then add your bot's configuration settings.
 
 Here are the following properties in the configuration file and descriptions of the values expected for each key.
 
